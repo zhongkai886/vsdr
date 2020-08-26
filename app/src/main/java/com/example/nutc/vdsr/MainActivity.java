@@ -89,9 +89,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void convertToColorImage(float[][][] arr) {
 
         Log.d("yyyy", "convertToColorImage: "+nHeight+"////"+nWidth);
-        Bitmap bm = Bitmap.createBitmap(1080 , 2220 , Bitmap.Config.ARGB_8888);
-        for (int row = 0; row < 2220; row++) {
-            for (int col = 0; col < 1080; col++) {
+        Bitmap bm = Bitmap.createBitmap(162 , 121 , Bitmap.Config.ARGB_8888);
+        for (int row = 0; row < 121; row++) {
+            for (int col = 0; col < 162; col++) {
                 bm.setPixel(col, row, Color.argb(255, (int) (arr[row][col][0]), (int) (arr[row][col][1]), (int) (arr[row][col][2])));
             }
         }
@@ -101,7 +101,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
     public float[][][] rgb2Ycbcr(float[][][] outputArray){
 //        RGBArray = new float[240][240][3];
-        YcbcrArray = new float[2220][1080][3];
+        YcbcrArray = new float[121][162][3];
 //        RGB  轉 ycbcr (矩陣乘法)
         for (int h = 0; h < outputArray.length; h++) {
             Log.d("ttttt",""+outputArray[1].length);
@@ -434,10 +434,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //            File imgFile = new File(imageFilePath);
 
             //TFLITE 她媽不要動
-            File tmpFile = new File(
-                    Environment.getExternalStorageDirectory(), "bbc.png");
-            BitmapUri=Environment.getExternalStorageDirectory()+"/bbc.png";
-            Log.d("",""+BitmapUri);
+            File tmpFile = image;
+            BitmapUri=imageFilePath;
+            Log.d("dddd",""+BitmapUri);
             outputFileUri = FileProvider.getUriForFile(MainActivity.this, BuildConfig.APPLICATION_ID + ".provider",tmpFile);
             bmp = BitmapFactory.decodeFile(BitmapUri);
             BitmapDrawable bitmapDrawable = new BitmapDrawable(bmp);
