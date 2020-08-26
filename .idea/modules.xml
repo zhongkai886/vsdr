@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/VDSR.iml" filepath="$PROJECT_DIR$/VDSR.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tensorflow-vdsr.iml" filepath="$PROJECT_DIR$/tensorflow-vdsr.iml" group="tensorflow-vdsr" />
+      <module fileurl="file://$PROJECT_DIR$/app/tensorflow-vdsr-app.iml" filepath="$PROJECT_DIR$/app/tensorflow-vdsr-app.iml" group="tensorflow-vdsr/app" />
+    </modules>
+  </component>
+</project>
