@@ -375,15 +375,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
             case R.id.camera:
-
+                //open camera
                 Intent pictureIntent = new Intent(
                         MediaStore.ACTION_IMAGE_CAPTURE);
+
+                //if Intent open send ActivityForResult [OK]
                 if (pictureIntent.resolveActivity(getPackageManager()) != null) {
                     //Create a file to store the image
                     photoFile = null;
-
                     startActivityForResult(pictureIntent,REQUEST_CAPTURE_IMAGE);
-
                 }
 
         }
@@ -395,16 +395,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CAPTURE_IMAGE && resultCode == RESULT_OK) {
             Toast.makeText(this, "成功了", Toast.LENGTH_SHORT).show();
-//            Bundle extras = data.getExtras();
-//            Bitmap imageBitmap = (Bitmap) extras.get("data");
-
 
             String imageFileName="";
-            String timeStamp =
-                    new SimpleDateFormat("yyyyMMdd_HHmmss",
-                            Locale.getDefault()).format(new Date());
             imageFileName ="qqqqqqqqqqqqqqqqqqq";
-//        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
             File storageDir = getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
             File image = null;
             try {
@@ -418,12 +411,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
 
             imageFilePath = image.getAbsolutePath();
-            Log.v("77777777", "" + imageFilePath);
+            Log.v("777777778", "" + imageFilePath);
 
-
-
-
-            Log.d("5252525", "the destination for image file is: " + image );
             if (data.getExtras() != null)
             {
                 Bitmap bitmap = (Bitmap)data.getExtras().get("data");
@@ -442,71 +431,46 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             }
 
-            try {
-                createImageFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            File imgFile = new File(imageFilePath);
-
-            //儲存照片的檔案
-            if (imgFile.exists()) {
-
-                Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-                try {
-                    FileOutputStream out = new FileOutputStream(imgFile);
-
-                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
-                    out.flush();
-
-                    out.close();
-                    Log.d("123", "onActivityResult: "+imageFilePath);
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
 //            File imgFile = new File(imageFilePath);
+
+            //TFLITE 她媽不要動
+            File tmpFile = new File(
+                    Environment.getExternalStorageDirectory(), "bbc.png");
+            BitmapUri=Environment.getExternalStorageDirectory()+"/bbc.png";
+            Log.d("",""+BitmapUri);
+            outputFileUri = FileProvider.getUriForFile(MainActivity.this, BuildConfig.APPLICATION_ID + ".provider",tmpFile);
+            bmp = BitmapFactory.decodeFile(BitmapUri);
+            BitmapDrawable bitmapDrawable = new BitmapDrawable(bmp);
+            ImageView imageView =findViewById(R.id.photo);
+            imageView.setImageDrawable(bitmapDrawable);
+
+
+            inputBitmap = bmp;
+            inputBitmapPixel = new int[inputBitmap.getWidth() * inputBitmap.getHeight()];
+
 //
-//
-//            File tmpFile = new File(
-//                    Environment.getExternalStorageDirectory(), "bbc.png");
-//            BitmapUri=Environment.getExternalStorageDirectory()+"/bbc.png";
-//            Log.d("",""+BitmapUri);
-//            outputFileUri = FileProvider.getUriForFile(MainActivity.this, BuildConfig.APPLICATION_ID + ".provider",tmpFile);
-//            bmp = BitmapFactory.decodeFile(BitmapUri);
-//            BitmapDrawable bitmapDrawable = new BitmapDrawable(bmp);
-//            ImageView imageView =findViewById(R.id.photo);
-//            imageView.setImageDrawable(bitmapDrawable);
-//
-//
-//            inputBitmap = bmp;
-//            inputBitmapPixel = new int[inputBitmap.getWidth() * inputBitmap.getHeight()];
-//
-////
-//            inputBitmap.getPixels(inputBitmapPixel, 0, inputBitmap.getWidth(), 0, 0, inputBitmap.getWidth(), inputBitmap.getHeight());
-//
-//            int[] modcropHW = Util.modCrop(inputBitmap);
-//            inputColorArray = Util.RGB(inputBitmapPixel, modcropHW[1], modcropHW[0]);
-//
-//
-//            inputColorArray = rgb2Ycbcr(inputColorArray);
-//
-////              取得YCbCr像素
-////                int[] modcropHW = Util.modCrop(inputBitmap);
-////                inputBitmap.getPixels(inputBitmapPixel, 0, inputBitmap.getWidth(), 0, 0, inputBitmap.getWidth(), inputBitmap.getHeight());
-////                inputColorArray = Util.YCbCr(inputBitmapPixel, modcropHW[1], modcropHW[0]);
-//
-////              分割圖片多個40*40子圖像
-//            spliteImage(inputColorArray);
-//            bitmapFromArray(inputSubImageArrayList);
-//
-////              建立tfltie 類別並丟資料
-//            mTflite = new TFlite(MainActivity.this, mCheckBox.isChecked(), mCheckBoxGPU.isChecked(), onBackImg, nHeight, nWidth);
-//            mTflite.setInputImageArrayList(inputSubImageArrayList);
-//            nHeight=0;
-//            nWidth=0;
+            inputBitmap.getPixels(inputBitmapPixel, 0, inputBitmap.getWidth(), 0, 0, inputBitmap.getWidth(), inputBitmap.getHeight());
+
+            int[] modcropHW = Util.modCrop(inputBitmap);
+            inputColorArray = Util.RGB(inputBitmapPixel, modcropHW[1], modcropHW[0]);
+
+
+            inputColorArray = rgb2Ycbcr(inputColorArray);
+
+//              取得YCbCr像素
+//                int[] modcropHW = Util.modCrop(inputBitmap);
+//                inputBitmap.getPixels(inputBitmapPixel, 0, inputBitmap.getWidth(), 0, 0, inputBitmap.getWidth(), inputBitmap.getHeight());
+//                inputColorArray = Util.YCbCr(inputBitmapPixel, modcropHW[1], modcropHW[0]);
+
+//              分割圖片多個40*40子圖像
+            spliteImage(inputColorArray);
+            bitmapFromArray(inputSubImageArrayList);
+
+//              建立tfltie 類別並丟資料
+            mTflite = new TFlite(MainActivity.this, mCheckBox.isChecked(), mCheckBoxGPU.isChecked(), onBackImg, nHeight, nWidth);
+            mTflite.setInputImageArrayList(inputSubImageArrayList);
+            nHeight=0;
+            nWidth=0;
         }
     }
 
