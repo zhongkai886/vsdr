@@ -243,16 +243,43 @@ public class TFlite {
 
 
 ////          find Y  min and max
-//        float minY = 0.0f, maxY = 0.0f;
-//        float minGreen = 0.0f, maxGreen = 0.0f;
-//        float minBlue = 0.0f, maxBlue = 0.0f;
-//        for (int i = 0; i < nHeight * IMAGE_SIZE; i++) {
-//            for (int j = 0; j < nWidth * IMAGE_SIZE; j++) {
-//                if (outputArray[i][j][0] < minY) minY = outputArray[i][j][0];
-//                else if (outputArray[i][j][0] > maxY) maxY = outputArray[i][j][0];
-////
-//            }
-//        }
+        float minR = 0.0f, maxR = 0.0f;
+        float minGreen = 0.0f, maxGreen = 0.0f;
+        float minBlue = 0.0f, maxBlue = 0.0f;
+        for (int i = 0; i < nHeight * IMAGE_SIZE; i++) {
+            for (int j = 0; j < nWidth * IMAGE_SIZE; j++) {
+                if (RGBArray[i][j][0] < minR) minR = RGBArray[i][j][0];
+                else if (RGBArray[i][j][0] > maxR) maxR = RGBArray[i][j][0];
+//
+            }
+        }
+
+        for (int i = 0; i < nHeight * IMAGE_SIZE; i++) {
+            for (int j = 0; j < nWidth * IMAGE_SIZE; j++) {
+                if (RGBArray[i][j][1] < minGreen) minGreen = RGBArray[i][j][1];
+                else if (RGBArray[i][j][1] > maxGreen) maxGreen = RGBArray[i][j][1];
+//
+            }
+        }
+
+        for (int i = 0; i < nHeight * IMAGE_SIZE; i++) {
+            for (int j = 0; j < nWidth * IMAGE_SIZE; j++) {
+                if (RGBArray[i][j][2] < minBlue) minBlue = RGBArray[i][j][2];
+                else if (RGBArray[i][j][2] > maxBlue) maxBlue = RGBArray[i][j][2];
+//
+            }
+        }
+        Log.d("dddd",""+minR);
+
+        for (int h = 0; h < RGBArray.length; h++) {
+            for (int w = 0; w < RGBArray[0].length; w++) {
+               RGBArray[h][w][0]= ((RGBArray[h][w][0]-minR)/(maxR-minR))*255;
+               RGBArray[h][w][1]= ((RGBArray[h][w][1]-minGreen)/(maxGreen-minGreen))*255;
+               RGBArray[h][w][2]= ((RGBArray[h][w][2]-minBlue)/(maxBlue-minBlue))*255;
+               Log.d("ddddd",""+RGBArray[h][w][2]);
+            }
+        }
+
         convertToColorImage(RGBArray);
     }
 
