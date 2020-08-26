@@ -10,6 +10,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -27,7 +28,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
+
+import static android.os.Environment.getExternalStoragePublicDirectory;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private TFlite mTflite;
@@ -370,46 +376,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             case R.id.camera:
 
-//                Intent intent = new Intent(
-//                        android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-                File tmpFile = new File(
-                        Environment.getExternalStorageDirectory(), "bbc.png");
-                BitmapUri=Environment.getExternalStorageDirectory()+"/bbc.png";
-                Log.d("",""+BitmapUri);
-                outputFileUri = FileProvider.getUriForFile(MainActivity.this, BuildConfig.APPLICATION_ID + ".provider",tmpFile);
-                bmp = BitmapFactory.decodeFile(BitmapUri);
-                BitmapDrawable bitmapDrawable = new BitmapDrawable(bmp);
-                ImageView imageView =findViewById(R.id.photo);
-                imageView.setImageDrawable(bitmapDrawable);
+                Intent pictureIntent = new Intent(
+                        MediaStore.ACTION_IMAGE_CAPTURE);
+                if (pictureIntent.resolveActivity(getPackageManager()) != null) {
+                    //Create a file to store the image
+                    photoFile = null;
 
+                    startActivityForResult(pictureIntent,REQUEST_CAPTURE_IMAGE);
 
-                inputBitmap = bmp;
-                inputBitmapPixel = new int[inputBitmap.getWidth() * inputBitmap.getHeight()];
-
-//
-                inputBitmap.getPixels(inputBitmapPixel, 0, inputBitmap.getWidth(), 0, 0, inputBitmap.getWidth(), inputBitmap.getHeight());
-
-                int[] modcropHW = Util.modCrop(inputBitmap);
-                inputColorArray = Util.RGB(inputBitmapPixel, modcropHW[1], modcropHW[0]);
-
-
-                inputColorArray = rgb2Ycbcr(inputColorArray);
-
-//              取得YCbCr像素
-//                int[] modcropHW = Util.modCrop(inputBitmap);
-//                inputBitmap.getPixels(inputBitmapPixel, 0, inputBitmap.getWidth(), 0, 0, inputBitmap.getWidth(), inputBitmap.getHeight());
-//                inputColorArray = Util.YCbCr(inputBitmapPixel, modcropHW[1], modcropHW[0]);
-
-//              分割圖片多個40*40子圖像
-                spliteImage(inputColorArray);
-                bitmapFromArray(inputSubImageArrayList);
-
-//              建立tfltie 類別並丟資料
-                mTflite = new TFlite(MainActivity.this, mCheckBox.isChecked(), mCheckBoxGPU.isChecked(), onBackImg, nHeight, nWidth);
-                mTflite.setInputImageArrayList(inputSubImageArrayList);
-                nHeight=0;
-                nWidth=0;
-
+                }
 
         }
     }
@@ -420,7 +395,140 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CAPTURE_IMAGE && resultCode == RESULT_OK) {
             Toast.makeText(this, "成功了", Toast.LENGTH_SHORT).show();
+//            Bundle extras = data.getExtras();
+//            Bitmap imageBitmap = (Bitmap) extras.get("data");
 
+
+            String imageFileName="";
+            String timeStamp =
+                    new SimpleDateFormat("yyyyMMdd_HHmmss",
+                            Locale.getDefault()).format(new Date());
+            imageFileName ="qqqqqqqqqqqqqqqqqqq";
+//        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+            File storageDir = getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+            File image = null;
+            try {
+                image = File.createTempFile(
+                        imageFileName,  /* prefix */
+                        ".jpg",         /* suffix */
+                        storageDir      /* directory */
+                );
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            imageFilePath = image.getAbsolutePath();
+            Log.v("77777777", "" + imageFilePath);
+
+
+
+
+            Log.d("5252525", "the destination for image file is: " + image );
+            if (data.getExtras() != null)
+            {
+                Bitmap bitmap = (Bitmap)data.getExtras().get("data");
+                //判斷照片為橫向或者為直向，並進入ScalePic判斷圖片是否要進行縮放
+                try
+                {
+                    FileOutputStream out = new FileOutputStream(image);
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
+                    out.flush();
+                    out.close();
+                }
+                catch (Exception e)
+                {
+                    Log.e("5525", "ERROR:" + e.toString());
+                }
+
+            }
+
+            try {
+                createImageFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            File imgFile = new File(imageFilePath);
+
+            //儲存照片的檔案
+            if (imgFile.exists()) {
+
+                Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+                try {
+                    FileOutputStream out = new FileOutputStream(imgFile);
+
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
+                    out.flush();
+
+                    out.close();
+                    Log.d("123", "onActivityResult: "+imageFilePath);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+//            File imgFile = new File(imageFilePath);
+//
+//
+//            File tmpFile = new File(
+//                    Environment.getExternalStorageDirectory(), "bbc.png");
+//            BitmapUri=Environment.getExternalStorageDirectory()+"/bbc.png";
+//            Log.d("",""+BitmapUri);
+//            outputFileUri = FileProvider.getUriForFile(MainActivity.this, BuildConfig.APPLICATION_ID + ".provider",tmpFile);
+//            bmp = BitmapFactory.decodeFile(BitmapUri);
+//            BitmapDrawable bitmapDrawable = new BitmapDrawable(bmp);
+//            ImageView imageView =findViewById(R.id.photo);
+//            imageView.setImageDrawable(bitmapDrawable);
+//
+//
+//            inputBitmap = bmp;
+//            inputBitmapPixel = new int[inputBitmap.getWidth() * inputBitmap.getHeight()];
+//
+////
+//            inputBitmap.getPixels(inputBitmapPixel, 0, inputBitmap.getWidth(), 0, 0, inputBitmap.getWidth(), inputBitmap.getHeight());
+//
+//            int[] modcropHW = Util.modCrop(inputBitmap);
+//            inputColorArray = Util.RGB(inputBitmapPixel, modcropHW[1], modcropHW[0]);
+//
+//
+//            inputColorArray = rgb2Ycbcr(inputColorArray);
+//
+////              取得YCbCr像素
+////                int[] modcropHW = Util.modCrop(inputBitmap);
+////                inputBitmap.getPixels(inputBitmapPixel, 0, inputBitmap.getWidth(), 0, 0, inputBitmap.getWidth(), inputBitmap.getHeight());
+////                inputColorArray = Util.YCbCr(inputBitmapPixel, modcropHW[1], modcropHW[0]);
+//
+////              分割圖片多個40*40子圖像
+//            spliteImage(inputColorArray);
+//            bitmapFromArray(inputSubImageArrayList);
+//
+////              建立tfltie 類別並丟資料
+//            mTflite = new TFlite(MainActivity.this, mCheckBox.isChecked(), mCheckBoxGPU.isChecked(), onBackImg, nHeight, nWidth);
+//            mTflite.setInputImageArrayList(inputSubImageArrayList);
+//            nHeight=0;
+//            nWidth=0;
         }
+    }
+
+    String currentPhotoPath;
+
+
+
+    private File createImageFile() throws IOException {
+        String imageFileName="";
+
+        imageFileName ="qqqqqqqqqqqqqqqqqqq";
+//        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File storageDir = getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+
+        imageFilePath = image.getAbsolutePath();
+        Log.v("77777777", "" + imageFilePath);
+
+        return image;
     }
 }
